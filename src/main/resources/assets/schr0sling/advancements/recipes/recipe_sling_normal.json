@@ -1,0 +1,21 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "recipe_first": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                            {
+                                "item": "minecraft:leather",
+                                "item": "minecraft:string"
+                            }
+                ]
+            }
+        }
+    },
+    "rewards": {
+        "recipes": [
+            "schr0sling:sling_normal"
+        ]
+    }
+}
