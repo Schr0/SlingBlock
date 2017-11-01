@@ -3,6 +3,3 @@ itemGroup.schr0sling.item=Sling Items
 
 // ======================================== ITEM ===================================== //
 item.sling_normal.name=Sling
-
-// ======================================== ENTITY ===================================== //
-entity.sling_bullet.name=Sling Bullet

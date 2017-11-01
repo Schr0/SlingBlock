@@ -127,7 +127,7 @@ public abstract class ItemSling extends Item
 	{
 		World world = player.getEntityWorld();
 
-		if (world.isRemote)
+		if (world.isRemote || !(player instanceof EntityPlayer))
 		{
 			return;
 		}
@@ -138,6 +138,8 @@ public abstract class ItemSling extends Item
 		{
 			return;
 		}
+
+		((EntityPlayer) player).addExhaustion(0.15F);
 
 		if (usingCount % 20 == 0)
 		{
@@ -174,10 +176,8 @@ public abstract class ItemSling extends Item
 			return;
 		}
 
-		EntityPlayer player = (EntityPlayer) entityLiving;
 		float chageAmmount = (float) this.getChageAmmount(stack, usingCount);
-		float velocity = (1.0F + (chageAmmount / 10));
-		float inaccuracy = (1.1F - (chageAmmount / 10));
+		EntityPlayer player = (EntityPlayer) entityLiving;
 		EntitySlingBullet entitySlingBullet = new EntitySlingBullet(worldIn, player, bullet, (int) chageAmmount);
 
 		int punch = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH, stack);
@@ -194,6 +194,8 @@ public abstract class ItemSling extends Item
 			entitySlingBullet.setFire(flame * 200);
 		}
 
+		float velocity = (1.0F + (chageAmmount / 10));
+		float inaccuracy = (1.1F - (chageAmmount / 10));
 		entitySlingBullet.setHeadingFromThrower(player, player.rotationPitch, player.rotationYaw, 0.0F, velocity, inaccuracy);
 
 		worldIn.spawnEntity(entitySlingBullet);
@@ -217,12 +219,12 @@ public abstract class ItemSling extends Item
 
 	// TODO /* ======================================== MOD START =====================================*/
 
-	private int getUsingCount(ItemStack stack, int timeLeft)
+	public int getUsingCount(ItemStack stack, int timeLeft)
 	{
 		return (this.getMaxItemUseDuration(stack) - timeLeft);
 	}
 
-	private int getChageAmmount(ItemStack stack, int usingCount)
+	public int getChageAmmount(ItemStack stack, int usingCount)
 	{
 		int chageAmount = (usingCount / 20) + EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, stack);
 		chageAmount = Math.min(chageAmount, CHAGE_AMOUNT_MAX);
@@ -231,7 +233,7 @@ public abstract class ItemSling extends Item
 		return chageAmount;
 	}
 
-	protected boolean isBullet(ItemStack stack)
+	public boolean isBullet(ItemStack stack)
 	{
 		if (stack.getItem() instanceof ItemBlock)
 		{
@@ -241,7 +243,7 @@ public abstract class ItemSling extends Item
 		return false;
 	}
 
-	private ItemStack getBullet(EntityLivingBase entityLivingBase)
+	public ItemStack getBullet(EntityLivingBase entityLivingBase)
 	{
 		if (entityLivingBase instanceof EntityPlayer)
 		{

@@ -5,7 +5,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityWither;
-import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
@@ -20,7 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
 
 public class EntitySlingBullet extends EntityThrowable
 {
@@ -30,15 +28,16 @@ public class EntitySlingBullet extends EntityThrowable
 		EntityThrowable.registerFixesThrowable(fixer, SlingEntitys.NAME_SLING_BULLET);
 	}
 
-	private static final float ATTACK_AMOUNT_MIN = 1.0F;
-	private static final float ATTACK_AMOUNT_MAX = 100.0F;
-
 	private static final String TAG = Sling.MOD_ID + ".";
 	private static final String TAG_ITEM = TAG + "item";
 	private static final String TAG_CHAGE_AMMOUNT = TAG + "chage_ammount";
 	private static final String TAG_KNOCKBACK_STRENGTH = TAG + "knockback_strength";
 
 	private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack> createKey(EntitySlingBullet.class, DataSerializers.ITEM_STACK);
+
+	private static final float BLOCKHARDNESS_MIN = 1.0F;
+	private static final float BLOCKHARDNESS_MAX = 10.0F;
+
 	private int chageAmmount;
 	private int knockbackStrength;
 
@@ -81,6 +80,12 @@ public class EntitySlingBullet extends EntityThrowable
 	}
 
 	@Override
+	public String getName()
+	{
+		return this.getBulletBlockState().getBlock().getLocalizedName();
+	}
+
+	@Override
 	protected float getGravityVelocity()
 	{
 		return 0.05F - ((float) this.getChageAmount() / 200);
@@ -112,7 +117,7 @@ public class EntitySlingBullet extends EntityThrowable
 				}
 			}
 
-			if (this.isBurning() && !(target instanceof EntityEnderman))
+			if (this.isBurning())
 			{
 				target.setFire(this.getChageAmount() * 20);
 			}
@@ -129,20 +134,32 @@ public class EntitySlingBullet extends EntityThrowable
 			{
 				float blockHardness = blockState.getBlockHardness(this.world, resultBlockPos);
 
-				if (blockHardness < this.getBulletBlockState().getBlockHardness(this.world, this.getPosition()))
+				if (blockHardness < this.getBulletBlockState().getBlockHardness(this.world, resultBlockPos))
 				{
-					this.world.destroyBlock(resultBlockPos, true);
-
-					if (blockHardness == 0.0F)
+					if (this.world.destroyBlock(resultBlockPos, true))
 					{
-						return;
+						if (blockHardness == 0.0F)
+						{
+							return;
+						}
+
+						int chageAmount = this.getChageAmount();
+
+						--chageAmount;
+
+						if (0 < chageAmount)
+						{
+							this.setChageAmount(chageAmount);
+
+							return;
+						}
 					}
 				}
 			}
 		}
 
-		FMLLog.info("ChageAmount : %d", this.getChageAmount());
-		FMLLog.info("AttackAmount : %f", this.getAttackAmount());
+		// FMLLog.info("ChageAmount : %d", this.getChageAmount());
+		// FMLLog.info("AttackAmount : %f", this.getAttackAmount());
 
 		this.world.playEvent(2001, resultBlockPos, Block.getStateId(this.getBulletBlockState()));
 
@@ -157,6 +174,21 @@ public class EntitySlingBullet extends EntityThrowable
 		if (this.isInWater())
 		{
 			this.extinguish();
+
+			if (!this.world.isRemote)
+			{
+				if (this.ticksExisted % 5 == 0)
+				{
+					int chageAmount = this.getChageAmount();
+
+					--chageAmount;
+
+					if (0 < chageAmount)
+					{
+						this.setChageAmount(chageAmount);
+					}
+				}
+			}
 		}
 	}
 
@@ -193,7 +225,7 @@ public class EntitySlingBullet extends EntityThrowable
 		this.knockbackStrength = knockbackStrengthIn;
 	}
 
-	public IBlockState getBulletBlockState()
+	private IBlockState getBulletBlockState()
 	{
 		ItemStack stack = this.getEntityItem();
 
@@ -208,13 +240,10 @@ public class EntitySlingBullet extends EntityThrowable
 	private float getAttackAmount()
 	{
 		float blockHardness = this.getBulletBlockState().getBlockHardness(this.world, this.getPosition());
-		float chageAmount = this.getChageAmount();
+		blockHardness = Math.min(blockHardness, BLOCKHARDNESS_MAX);
+		blockHardness = Math.max(blockHardness, BLOCKHARDNESS_MIN);
 
-		float attackAmount = (blockHardness * chageAmount);
-		attackAmount = Math.min(attackAmount, ATTACK_AMOUNT_MAX);
-		attackAmount = Math.max(attackAmount, ATTACK_AMOUNT_MIN);
-
-		return attackAmount;
+		return (blockHardness * this.getChageAmount());
 	}
 
 }
