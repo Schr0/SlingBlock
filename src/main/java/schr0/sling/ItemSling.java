@@ -49,9 +49,9 @@ public abstract class ItemSling extends Item
 			@Override
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
-				if (entityIn != null)
+				if (entityIn != null && entityIn.getActiveItemStack().isItemEqual(stack))
 				{
-					if (entityIn.isHandActive() && entityIn.getActiveItemStack().isItemEqual(stack))
+					if (entityIn.isHandActive())
 					{
 						return 1.0F;
 					}
@@ -139,23 +139,24 @@ public abstract class ItemSling extends Item
 			return;
 		}
 
-		((EntityPlayer) player).addExhaustion(0.15F);
-
 		if (usingCount % 20 == 0)
 		{
+			EntityPlayer entityPlayer = (EntityPlayer) player;
 			int chageAmmount = this.getChageAmmount(stack, usingCount);
+
+			entityPlayer.addExhaustion(0.15F);
 
 			if (chageAmmount == CHAGE_AMOUNT_MAX)
 			{
-				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(player, SlingParticles.ENTITY_SILING_CHAGE_MAX));
+				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingParticles.ENTITY_SILING_CHAGE_MAX));
 
-				world.playSound(null, player.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.25F, 1.0F);
+				world.playSound(null, entityPlayer.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.25F, 1.0F);
 			}
 			else
 			{
-				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(player, SlingParticles.ENTITY_SILING_CHAGE));
+				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingParticles.ENTITY_SILING_CHAGE));
 
-				world.playSound(null, player.getPosition(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.25F, (0.5F + ((float) chageAmmount / 10)));
+				world.playSound(null, entityPlayer.getPosition(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.25F, (0.5F + ((float) chageAmmount / 10)));
 			}
 		}
 	}
@@ -176,8 +177,9 @@ public abstract class ItemSling extends Item
 			return;
 		}
 
-		float chageAmmount = (float) this.getChageAmmount(stack, usingCount);
 		EntityPlayer player = (EntityPlayer) entityLiving;
+		float chageAmmount = (float) this.getChageAmmount(stack, usingCount);
+
 		EntitySlingBullet entitySlingBullet = new EntitySlingBullet(worldIn, player, bullet, (int) chageAmmount);
 
 		int punch = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH, stack);
@@ -210,11 +212,11 @@ public abstract class ItemSling extends Item
 			stack.damageItem(1, entityLiving);
 		}
 
-		SlingPackets.DISPATCHER.sendToAll(new MessagePlayerAction(player, SlingActionTypes.SWING_ARM));
-
 		player.getCooldownTracker().setCooldown(this, CHAGE_INTERVAL);
 
 		player.addStat(StatList.getObjectUseStats(this));
+
+		SlingPackets.DISPATCHER.sendToAll(new MessagePlayerAction(player, SlingActionTypes.SWING_ARM));
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -248,16 +250,18 @@ public abstract class ItemSling extends Item
 		if (entityLivingBase instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer) entityLivingBase;
+			ItemStack offHandStack = player.getHeldItem(EnumHand.OFF_HAND);
+			ItemStack mainHandStack = player.getHeldItem(EnumHand.MAIN_HAND);
 
-			if (this.isBullet(player.getHeldItem(EnumHand.OFF_HAND)))
+			if (this.isBullet(offHandStack))
 			{
-				return player.getHeldItem(EnumHand.OFF_HAND);
+				return offHandStack;
 			}
 			else
 			{
-				if (this.isBullet(player.getHeldItem(EnumHand.MAIN_HAND)))
+				if (this.isBullet(mainHandStack))
 				{
-					return player.getHeldItem(EnumHand.MAIN_HAND);
+					return mainHandStack;
 				}
 				else
 				{

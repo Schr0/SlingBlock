@@ -28,16 +28,15 @@ public class EntitySlingBullet extends EntityThrowable
 		EntityThrowable.registerFixesThrowable(fixer, SlingEntitys.NAME_SLING_BULLET);
 	}
 
+	private static final float BLOCKHARDNESS_MIN = 1.0F;
+	private static final float BLOCKHARDNESS_MAX = 10.0F;
+
 	private static final String TAG = Sling.MOD_ID + ".";
 	private static final String TAG_ITEM = TAG + "item";
 	private static final String TAG_CHAGE_AMMOUNT = TAG + "chage_ammount";
 	private static final String TAG_KNOCKBACK_STRENGTH = TAG + "knockback_strength";
 
 	private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack> createKey(EntitySlingBullet.class, DataSerializers.ITEM_STACK);
-
-	private static final float BLOCKHARDNESS_MIN = 1.0F;
-	private static final float BLOCKHARDNESS_MAX = 10.0F;
-
 	private int chageAmmount;
 	private int knockbackStrength;
 
@@ -107,6 +106,11 @@ public class EntitySlingBullet extends EntityThrowable
 
 			Entity target = result.entityHit;
 
+			if (this.isBurning())
+			{
+				target.setFire(this.getChageAmount() * 20);
+			}
+
 			if (0 < this.getKnockbackStrength())
 			{
 				float velocity = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
@@ -117,32 +121,31 @@ public class EntitySlingBullet extends EntityThrowable
 				}
 			}
 
-			if (this.isBurning())
-			{
-				target.setFire(this.getChageAmount() * 20);
-			}
-
 			target.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), this.getAttackAmount());
 		}
 		else
 		{
 			resultBlockPos = result.getBlockPos().equals(BlockPos.ORIGIN) ? this.getPosition() : result.getBlockPos();
 
-			IBlockState blockState = this.world.getBlockState(resultBlockPos);
+			IBlockState resultBlockState = this.world.getBlockState(resultBlockPos);
 
-			if (EntityWither.canDestroyBlock(blockState.getBlock()))
+			if (EntityWither.canDestroyBlock(resultBlockState.getBlock()))
 			{
-				float blockHardness = blockState.getBlockHardness(this.world, resultBlockPos);
+				float bulletBlockHardness = this.getBulletBlockState().getBlockHardness(this.world, resultBlockPos);
+				float resultBlockHardness = resultBlockState.getBlockHardness(this.world, resultBlockPos);
+				boolean isDestroyBlock = false;
 
-				if (blockHardness < this.getBulletBlockState().getBlockHardness(this.world, resultBlockPos))
+				if (resultBlockHardness == 0.0F)
+				{
+					this.world.destroyBlock(resultBlockPos, true);
+
+					return;
+				}
+
+				if ((1.0 <= bulletBlockHardness) && (resultBlockHardness < bulletBlockHardness))
 				{
 					if (this.world.destroyBlock(resultBlockPos, true))
 					{
-						if (blockHardness == 0.0F)
-						{
-							return;
-						}
-
 						int chageAmount = this.getChageAmount();
 
 						--chageAmount;
@@ -177,7 +180,7 @@ public class EntitySlingBullet extends EntityThrowable
 
 			if (!this.world.isRemote)
 			{
-				if (this.ticksExisted % 5 == 0)
+				if (this.ticksExisted % (20 / 2) == 0)
 				{
 					int chageAmount = this.getChageAmount();
 
