@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.packet;
 
 import java.util.Random;
 
@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.slingblock.util.SlingBlockParticles;
 
 @SideOnly(Side.CLIENT)
 public class MessageHandlerParticleEntity implements IMessageHandler<MessageParticleEntity, IMessage>
@@ -28,13 +29,13 @@ public class MessageHandlerParticleEntity implements IMessageHandler<MessagePart
 
 			switch (message.getParticleType())
 			{
-				case SlingParticles.ENTITY_SILING_CHAGE :
+				case SlingBlockParticles.ENTITY_SILING_CHAGE :
 
 					particleSilingChage(world, entity, random);
 
 					break;
 
-				case SlingParticles.ENTITY_SILING_CHAGE_MAX :
+				case SlingBlockParticles.ENTITY_SILING_CHAGE_MAX :
 
 					particleSilingChageMax(world, entity, random);
 

@@ -1,5 +1,5 @@
 {
-    "parent": "schr0sling:item/sling_normal",
+    "parent": "schr0slingblock:item/sling_normal",
     "display": {
         "firstperson_righthand": {
             "rotation": [ 0, -90, 25 ],

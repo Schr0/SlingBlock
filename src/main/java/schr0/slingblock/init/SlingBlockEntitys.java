@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.init;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
@@ -10,8 +10,11 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.slingblock.SlingBlock;
+import schr0.slingblock.entity.EntitySlingBullet;
+import schr0.slingblock.entity.RenderSlingBullet;
 
-public class SlingEntitys
+public class SlingBlockEntitys
 {
 
 	public static final int TRACKING_RANGE = 250;
@@ -23,7 +26,7 @@ public class SlingEntitys
 
 	public void registerEntitys()
 	{
-		registerEntity(EntitySlingBullet.class, NAME_SLING_BULLET, ID_SLING_BULLET, Sling.instance, TRACKING_RANGE, UPDATE_FREQUENCY, SENDS_VELOCITY_UPDATES);
+		registerEntity(EntitySlingBullet.class, NAME_SLING_BULLET, ID_SLING_BULLET, SlingBlock.instance, TRACKING_RANGE, UPDATE_FREQUENCY, SENDS_VELOCITY_UPDATES);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -43,7 +46,7 @@ public class SlingEntitys
 
 	private static void registerEntity(Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
 	{
-		EntityRegistry.registerModEntity(new ResourceLocation(Sling.MOD_ID, entityName), entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
+		EntityRegistry.registerModEntity(new ResourceLocation(SlingBlock.MOD_ID, entityName), entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
 	}
 
 }

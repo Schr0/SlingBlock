@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.packet;
 
 import java.util.Random;
 

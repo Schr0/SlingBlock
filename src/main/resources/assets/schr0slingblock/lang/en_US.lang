@@ -1,5 +1,5 @@
 // ======================================== CREATIVETABS ===================================== //
-itemGroup.schr0sling.item=Sling Items
+itemGroup.schr0slingblock.item=SlingBlock : Items
 
 // ======================================== ITEM ===================================== //
 item.sling_normal.name=Sling

@@ -1,57 +1,65 @@
-package schr0.sling;
+package schr0.slingblock.packet;
 
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MessageParticleEntity implements IMessage
+public class MessagePlayerAction implements IMessage
 {
 
 	private int entitiyID;
-	private int particleType;
+	private int actionType;
 
-	public MessageParticleEntity()
+	public MessagePlayerAction()
 	{
 		// none
 	}
 
-	public MessageParticleEntity(Entity entity, int particleType)
+	public MessagePlayerAction(EntityLivingBase entity, int actionType)
 	{
 		this.entitiyID = entity.getEntityId();
-		this.particleType = particleType;
+		this.actionType = actionType;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf)
 	{
 		this.entitiyID = buf.readInt();
-		this.particleType = buf.readInt();
+		this.actionType = buf.readInt();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
 		buf.writeInt(this.entitiyID);
-		buf.writeInt(this.particleType);
+		buf.writeInt(this.actionType);
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
 
 	@Nullable
-	public Entity getEntity(World world)
+	public EntityLivingBase getEntityLivingBase(World world)
 	{
-		return world.getEntityByID(this.entitiyID);
+		Entity entity = world.getEntityByID(this.entitiyID);
+
+		if (entity instanceof EntityLivingBase)
+		{
+			return (EntityLivingBase) entity;
+		}
+
+		return (EntityLivingBase) null;
 	}
 
-	public int getParticleType()
+	public int getActionType()
 	{
-		return this.particleType;
+		return this.actionType;
 	}
 
 }

@@ -1,7 +1,7 @@
 {
     "parent": "item/handheld",
         "textures": {
-        "layer0": "schr0sling:items/sling_normal"
+        "layer0": "schr0slingblock:items/sling_normal"
     },
     "display": {
         "thirdperson_righthand": {

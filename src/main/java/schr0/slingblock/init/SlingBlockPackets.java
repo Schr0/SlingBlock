@@ -1,14 +1,19 @@
-package schr0.sling;
+package schr0.slingblock.init;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.slingblock.SlingBlock;
+import schr0.slingblock.packet.MessageHandlerParticleEntity;
+import schr0.slingblock.packet.MessageHandlerPlayerAction;
+import schr0.slingblock.packet.MessageParticleEntity;
+import schr0.slingblock.packet.MessagePlayerAction;
 
-public class SlingPackets
+public class SlingBlockPackets
 {
 
-	public static final String CHANNEL_NAME = Sling.MOD_ID;
+	public static final String CHANNEL_NAME = SlingBlock.MOD_ID;
 	public static final SimpleNetworkWrapper DISPATCHER = NetworkRegistry.INSTANCE.newSimpleChannel(CHANNEL_NAME);
 
 	public static final int ID_PLAYER_ACTION = 0;

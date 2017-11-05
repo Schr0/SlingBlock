@@ -1,9 +1,9 @@
-package schr0.sling;
+package schr0.slingblock;
 
 public enum SlingMaterial
 {
 
-	NORMAL(500, 5);
+	NORMAL(128, 5);
 
 	private final int maxUses;
 	private final int enchantability;

@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -19,19 +19,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import schr0.slingblock.SlingBlock;
+import schr0.slingblock.init.SlingBlockEntitys;
 
 public class EntitySlingBullet extends EntityThrowable
 {
 
 	public static void registerFixesSlingBullet(DataFixer fixer)
 	{
-		EntityThrowable.registerFixesThrowable(fixer, SlingEntitys.NAME_SLING_BULLET);
+		EntityThrowable.registerFixesThrowable(fixer, SlingBlockEntitys.NAME_SLING_BULLET);
 	}
 
-	private static final float BLOCKHARDNESS_MIN = 1.0F;
+	private static final float BLOCKHARDNESS_MIN = 0.0F;
 	private static final float BLOCKHARDNESS_MAX = 10.0F;
 
-	private static final String TAG = Sling.MOD_ID + ".";
+	private static final String TAG = SlingBlock.MOD_ID + ".";
 	private static final String TAG_ITEM = TAG + "item";
 	private static final String TAG_CHAGE_AMMOUNT = TAG + "chage_ammount";
 	private static final String TAG_KNOCKBACK_STRENGTH = TAG + "knockback_strength";
@@ -121,7 +123,12 @@ public class EntitySlingBullet extends EntityThrowable
 				}
 			}
 
-			target.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), this.getAttackAmount());
+			float attackAmount = this.getAttackAmount();
+
+			if (0.0F < attackAmount)
+			{
+				target.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), this.getAttackAmount());
+			}
 		}
 		else
 		{
@@ -131,9 +138,7 @@ public class EntitySlingBullet extends EntityThrowable
 
 			if (EntityWither.canDestroyBlock(resultBlockState.getBlock()))
 			{
-				float bulletBlockHardness = this.getBulletBlockState().getBlockHardness(this.world, resultBlockPos);
 				float resultBlockHardness = resultBlockState.getBlockHardness(this.world, resultBlockPos);
-				boolean isDestroyBlock = false;
 
 				if (resultBlockHardness == 0.0F)
 				{
@@ -141,6 +146,8 @@ public class EntitySlingBullet extends EntityThrowable
 
 					return;
 				}
+
+				float bulletBlockHardness = this.getBulletBlockState().getBlockHardness(this.world, this.getPosition());
 
 				if ((1.0 <= bulletBlockHardness) && (resultBlockHardness < bulletBlockHardness))
 				{
@@ -160,9 +167,6 @@ public class EntitySlingBullet extends EntityThrowable
 				}
 			}
 		}
-
-		// FMLLog.info("ChageAmount : %d", this.getChageAmount());
-		// FMLLog.info("AttackAmount : %f", this.getAttackAmount());
 
 		this.world.playEvent(2001, resultBlockPos, Block.getStateId(this.getBulletBlockState()));
 

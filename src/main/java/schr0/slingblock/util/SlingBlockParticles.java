@@ -1,6 +1,6 @@
-package schr0.sling;
+package schr0.slingblock.util;
 
-public class SlingParticles
+public class SlingBlockParticles
 {
 
 	public static final int ENTITY_SILING_CHAGE = 0;

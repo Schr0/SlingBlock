@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +23,12 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import schr0.slingblock.entity.EntitySlingBullet;
+import schr0.slingblock.init.SlingBlockPackets;
+import schr0.slingblock.packet.MessageParticleEntity;
+import schr0.slingblock.packet.MessagePlayerAction;
+import schr0.slingblock.util.SlingBlockActionTypes;
+import schr0.slingblock.util.SlingBlockParticles;
 
 public abstract class ItemSling extends Item
 {
@@ -49,9 +55,9 @@ public abstract class ItemSling extends Item
 			@Override
 			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
 			{
-				if (entityIn != null && entityIn.getActiveItemStack().isItemEqual(stack))
+				if (entityIn != null)
 				{
-					if (entityIn.isHandActive())
+					if (entityIn.getActiveItemStack().isItemEqual(stack) && entityIn.isHandActive())
 					{
 						return 1.0F;
 					}
@@ -148,13 +154,13 @@ public abstract class ItemSling extends Item
 
 			if (chageAmmount == CHAGE_AMOUNT_MAX)
 			{
-				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingParticles.ENTITY_SILING_CHAGE_MAX));
+				SlingBlockPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingBlockParticles.ENTITY_SILING_CHAGE_MAX));
 
 				world.playSound(null, entityPlayer.getPosition(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.25F, 1.0F);
 			}
 			else
 			{
-				SlingPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingParticles.ENTITY_SILING_CHAGE));
+				SlingBlockPackets.DISPATCHER.sendToAll(new MessageParticleEntity(entityPlayer, SlingBlockParticles.ENTITY_SILING_CHAGE));
 
 				world.playSound(null, entityPlayer.getPosition(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.25F, (0.5F + ((float) chageAmmount / 10)));
 			}
@@ -216,7 +222,9 @@ public abstract class ItemSling extends Item
 
 		player.addStat(StatList.getObjectUseStats(this));
 
-		SlingPackets.DISPATCHER.sendToAll(new MessagePlayerAction(player, SlingActionTypes.SWING_ARM));
+		SlingBlockPackets.DISPATCHER.sendToAll(new MessagePlayerAction(player, SlingBlockActionTypes.SWING_ARM));
+
+		worldIn.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (worldIn.rand.nextFloat() * 0.4F + 0.8F));
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/

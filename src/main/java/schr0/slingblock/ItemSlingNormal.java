@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock;
 
 public class ItemSlingNormal extends ItemSling
 {

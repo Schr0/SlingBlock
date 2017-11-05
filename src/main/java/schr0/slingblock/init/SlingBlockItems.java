@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.init;
 
 import java.util.ArrayList;
 
@@ -14,8 +14,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
+import schr0.slingblock.ItemSlingNormal;
+import schr0.slingblock.SlingBlock;
+import schr0.slingblock.util.SlingBlockCreativeTabs;
 
-public class SlingItems
+public class SlingBlockItems
 {
 
 	public static final Item SLING_NORMAL;
@@ -24,7 +27,7 @@ public class SlingItems
 
 	static
 	{
-		SLING_NORMAL = new ItemSlingNormal().setUnlocalizedName(NAME_SLING_NORMAL).setCreativeTab(SlingCreativeTabs.ITEM);
+		SLING_NORMAL = new ItemSlingNormal().setUnlocalizedName(NAME_SLING_NORMAL).setCreativeTab(SlingBlockCreativeTabs.ITEM);
 	}
 
 	public void registerItems(IForgeRegistry<Item> registry)
@@ -42,11 +45,11 @@ public class SlingItems
 
 	private static void registerItem(IForgeRegistry<Item> registry, Item item, int meta, String name)
 	{
-		item.setRegistryName(Sling.MOD_ID, name);
+		item.setRegistryName(SlingBlock.MOD_ID, name);
 
 		registry.register(item);
 
-		String domain = Sling.MOD_ID + ".";
+		String domain = SlingBlock.MOD_ID + ".";
 
 		if (meta <= 0)
 		{
@@ -67,7 +70,7 @@ public class SlingItems
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerModel(Item item, int meta)
+	private static void registerModel(Item item, int meta)
 	{
 		if (meta == 0)
 		{
@@ -90,7 +93,7 @@ public class SlingItems
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void registerModel(Item item)
+	private static void registerModel(Item item)
 	{
 		registerModel(item, 0);
 	}

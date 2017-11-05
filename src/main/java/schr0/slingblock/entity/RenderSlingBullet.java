@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock.entity;
 
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;

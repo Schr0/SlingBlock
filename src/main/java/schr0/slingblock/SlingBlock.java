@@ -1,4 +1,4 @@
-package schr0.sling;
+package schr0.slingblock;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
@@ -15,20 +15,24 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
+import schr0.slingblock.init.SlingBlockEntitys;
+import schr0.slingblock.init.SlingBlockItems;
+import schr0.slingblock.init.SlingBlockPackets;
+import schr0.slingblock.init.SlingBlockRecipes;
 
-@Mod(modid = Sling.MOD_ID, name = Sling.MOD_NAME, version = Sling.MOD_VERSION)
-public class Sling
+@Mod(modid = SlingBlock.MOD_ID, name = SlingBlock.MOD_NAME, version = SlingBlock.MOD_VERSION)
+public class SlingBlock
 {
 
 	/**
 	 * ModのID.
 	 */
-	public static final String MOD_ID = "schr0sling";
+	public static final String MOD_ID = "schr0slingblock";
 
 	/**
 	 * Modの名前.
 	 */
-	public static final String MOD_NAME = "Sling";
+	public static final String MOD_NAME = "SlingBlock";
 
 	/**
 	 * Modのバージョン.
@@ -40,8 +44,8 @@ public class Sling
 	 */
 	public static final String MOD_RESOURCE_DOMAIN = MOD_ID + ":";
 
-	@Mod.Instance(Sling.MOD_ID)
-	public static Sling instance;
+	@Mod.Instance(SlingBlock.MOD_ID)
+	public static SlingBlock instance;
 
 	/**
 	 * 初期・設定イベント.
@@ -53,7 +57,7 @@ public class Sling
 
 		if (event.getSide().isClient())
 		{
-			(new SlingEntitys()).registerRenders();
+			(new SlingBlockEntitys()).registerRenders();
 		}
 	}
 
@@ -81,7 +85,7 @@ public class Sling
 
 		if (event.getSide().isClient())
 		{
-			(new SlingPackets()).registerClientMessages();
+			(new SlingBlockPackets()).registerClientMessages();
 		}
 	}
 
@@ -108,7 +112,7 @@ public class Sling
 	{
 		IForgeRegistry<Item> registry = event.getRegistry();
 
-		(new SlingItems()).registerItems(registry);
+		(new SlingBlockItems()).registerItems(registry);
 	}
 
 	/**
@@ -118,7 +122,7 @@ public class Sling
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event)
 	{
-		(new SlingItems()).registerModels();
+		(new SlingBlockItems()).registerModels();
 	}
 
 	/**
@@ -127,7 +131,7 @@ public class Sling
 	@SubscribeEvent
 	public void registerEntitys(RegistryEvent.Register<EntityEntry> event)
 	{
-		(new SlingEntitys()).registerEntitys();
+		(new SlingBlockEntitys()).registerEntitys();
 	}
 
 	/**
@@ -138,7 +142,7 @@ public class Sling
 	{
 		IForgeRegistry<IRecipe> registry = event.getRegistry();
 
-		(new SlingRecipes()).registerRecipes(registry);
+		(new SlingBlockRecipes()).registerRecipes(registry);
 	}
 
 }
