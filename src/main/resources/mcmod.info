@@ -1,8 +1,8 @@
 [
 {
-  "modid": "schr0sling",
-  "name": "Sling",
-  "description": "Sling! Sling!! Sling!!!",
+  "modid": "schr0slingblock",
+  "name": "SlingBlock",
+  "description": "You can throw a Block.",
   "version": "1.0.0",
   "mcversion": "",
   "url": "http://forum.minecraftuser.jp/viewtopic.php?f=13&t=5376",
