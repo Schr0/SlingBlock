@@ -37,7 +37,7 @@ public class SlingBlock
 	/**
 	 * Modのバージョン.
 	 */
-	public static final String MOD_VERSION = "1.0.0";
+	public static final String MOD_VERSION = "1.0.1";
 
 	/**
 	 * ResourceLocationのDomain.
