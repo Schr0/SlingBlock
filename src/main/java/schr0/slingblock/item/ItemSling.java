@@ -1,4 +1,4 @@
-package schr0.slingblock;
+package schr0.slingblock.item;
 
 import javax.annotation.Nullable;
 
@@ -62,7 +62,10 @@ public abstract class ItemSling extends Item
 						return 1.0F;
 					}
 
-					if (entityIn.isSwingInProgress)
+					boolean isSwingMainHand = (entityIn.getHeldItem(EnumHand.MAIN_HAND).isItemEqual(stack) && entityIn.swingingHand == EnumHand.MAIN_HAND);
+					boolean isSwingOffHand = (entityIn.getHeldItem(EnumHand.OFF_HAND).isItemEqual(stack) && entityIn.swingingHand == EnumHand.OFF_HAND);
+
+					if (entityIn.isSwingInProgress && (isSwingMainHand || isSwingOffHand))
 					{
 						return 2.0F;
 

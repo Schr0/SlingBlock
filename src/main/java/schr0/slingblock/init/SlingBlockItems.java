@@ -14,8 +14,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.registries.IForgeRegistry;
-import schr0.slingblock.ItemSlingNormal;
 import schr0.slingblock.SlingBlock;
+import schr0.slingblock.item.ItemSlingNormal;
 import schr0.slingblock.util.SlingBlockCreativeTabs;
 
 public class SlingBlockItems
