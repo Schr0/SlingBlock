@@ -30,6 +30,8 @@ public class EntitySlingBullet extends EntityThrowable
 		EntityThrowable.registerFixesThrowable(fixer, SlingBlockEntitys.NAME_SLING_BULLET);
 	}
 
+	private static final int THROWING_INTERVAL = (1 * 20);
+
 	private static final float BLOCKHARDNESS_MIN = 0.0F;
 	private static final float BLOCKHARDNESS_MAX = 10.0F;
 
@@ -37,10 +39,12 @@ public class EntitySlingBullet extends EntityThrowable
 	private static final String TAG_ITEM = TAG + "item";
 	private static final String TAG_CHAGE_AMMOUNT = TAG + "chage_ammount";
 	private static final String TAG_KNOCKBACK_STRENGTH = TAG + "knockback_strength";
+	private static final String TAG_AGE = TAG + "age";
 
 	private static final DataParameter<ItemStack> ITEM = EntityDataManager.<ItemStack> createKey(EntitySlingBullet.class, DataSerializers.ITEM_STACK);
 	private int chageAmmount;
 	private int knockbackStrength;
+	private int age;
 
 	public EntitySlingBullet(World world)
 	{
@@ -53,6 +57,8 @@ public class EntitySlingBullet extends EntityThrowable
 
 		this.setEntityItem(stack);
 		this.setChageAmount(chageAmmount);
+		this.setKnockbackStrength(0);
+		this.setAge(0);
 	}
 
 	protected void entityInit()
@@ -69,6 +75,8 @@ public class EntitySlingBullet extends EntityThrowable
 		compound.setTag(TAG_ITEM, this.getEntityItem().writeToNBT(new NBTTagCompound()));
 		compound.setByte(TAG_CHAGE_AMMOUNT, (byte) this.getChageAmount());
 		compound.setByte(TAG_KNOCKBACK_STRENGTH, (byte) this.getKnockbackStrength());
+		compound.setByte(TAG_AGE, (byte) this.getAge());
+
 	}
 
 	public void readEntityFromNBT(NBTTagCompound compound)
@@ -78,6 +86,7 @@ public class EntitySlingBullet extends EntityThrowable
 		this.setEntityItem(new ItemStack(compound.getCompoundTag(TAG_ITEM)));
 		this.setChageAmount(compound.getByte(TAG_CHAGE_AMMOUNT));
 		this.setKnockbackStrength(compound.getByte(TAG_KNOCKBACK_STRENGTH));
+		this.setAge(compound.getByte(TAG_AGE));
 	}
 
 	@Override
@@ -107,6 +116,11 @@ public class EntitySlingBullet extends EntityThrowable
 			resultBlockPos = result.entityHit.getPosition();
 
 			Entity target = result.entityHit;
+
+			if (this.isThrowingInterval(target))
+			{
+				return;
+			}
 
 			if (this.isBurning())
 			{
@@ -176,27 +190,40 @@ public class EntitySlingBullet extends EntityThrowable
 	@Override
 	public void onUpdate()
 	{
-		super.onUpdate();
+		if (!this.world.isRemote)
+		{
+			int age = this.getAge();
+
+			++age;
+
+			if (this.getMaxAge() < age)
+			{
+				this.setDead();
+			}
+			else
+			{
+				this.setAge(age);
+			}
+		}
 
 		if (this.isInWater())
 		{
 			this.extinguish();
 
-			if (!this.world.isRemote)
+			if ((this.getAge() % (20 / 2) == 0) && (!this.world.isRemote))
 			{
-				if (this.ticksExisted % (20 / 2) == 0)
+				int chageAmount = this.getChageAmount();
+
+				--chageAmount;
+
+				if (0 < chageAmount)
 				{
-					int chageAmount = this.getChageAmount();
-
-					--chageAmount;
-
-					if (0 < chageAmount)
-					{
-						this.setChageAmount(chageAmount);
-					}
+					this.setChageAmount(chageAmount);
 				}
 			}
 		}
+
+		super.onUpdate();
 	}
 
 	// TODO /* ======================================== MOD START =====================================*/
@@ -230,6 +257,33 @@ public class EntitySlingBullet extends EntityThrowable
 	public void setKnockbackStrength(int knockbackStrengthIn)
 	{
 		this.knockbackStrength = knockbackStrengthIn;
+	}
+
+	public int getAge()
+	{
+		return this.age;
+	}
+
+	public int getMaxAge()
+	{
+		return (60 * 20);
+	}
+
+	public void setAge(int age)
+	{
+		this.age = age;
+	}
+
+	private boolean isThrowingInterval(Entity target)
+	{
+		if (this.getAge() < THROWING_INTERVAL)
+		{
+			return target.equals(this.getThrower());
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	private IBlockState getBulletBlockState()
